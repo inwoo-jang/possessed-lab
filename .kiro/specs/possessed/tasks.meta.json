@@ -1,0 +1,17 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "`npm run dev` 로컬 서버 정상 기동": [
+      {
+        "executionId": "c8a2e3bb-9060-496f-ab8e-047071c7a4b9",
+        "chatSessionId": "sess_f29e8d60-77fe-4210-8479-1ae42fd6e917",
+        "timestamp": 1793948112722
+      },
+      {
+        "executionId": "c8a2e3bb-9060-496f-ab8e-047071c7a4b9",
+        "chatSessionId": "sess_f29e8d60-77fe-4210-8479-1ae42fd6e917",
+        "timestamp": 1793949063837
+      }
+    ]
+  }
+}

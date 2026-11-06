@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+/* POSSESSED 디자인 토큰 */
+@theme {
+  /* 배경 / 표면 */
+  --color-possessed-bg: #0B090D;
+  --color-possessed-surface: #19131B;
+  --color-possessed-border: #47303A;
+
+  /* 판정 색상 */
+  --color-possessed-crimson: #B91C3B;
+  --color-possessed-alert: #FB7185;
+  --color-possessed-success: #4ADE80;
+
+  /* 텍스트 */
+  --color-possessed-text: #F5F3F4;
+  --color-possessed-muted: #9CA3AF;
+
+  /* 폰트 */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+:root {
+  --background: #0B090D;
+  --foreground: #F5F3F4;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans, Arial, Helvetica, sans-serif);
+}
+
+/* 저모션 모드: 모든 애니메이션 비활성화 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
