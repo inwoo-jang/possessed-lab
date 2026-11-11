@@ -122,7 +122,6 @@ export function resolveVariant(
 ): VerdictBadgeVariant {
   if (phase === 'EXECUTED') return 'EXECUTED';
   if (phase === 'ERROR')    return 'ERROR';
-  if (phase === 'PENDING')  return 'PENDING';
 
   if (phase === 'BLOCKED') {
     if (verdict === 'NEEDS_APPROVAL') return 'NEEDS_APPROVAL';

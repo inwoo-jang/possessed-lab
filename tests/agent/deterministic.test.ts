@@ -8,7 +8,7 @@
  *   3. agentProposed: false로 모든 이벤트가 기록됨 (강제 주입 명시)
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { runExperiment } from '@/server/agent/runner';
 import { adAgentRegistry } from '@/server/tools/registry';
 import { InMemoryEventWriter } from '@/lib/event-log';

@@ -88,6 +88,7 @@ export const Pending: Story = {
 
 export const AllVariants: Story = {
   name: '전체 배지 비교',
+  args: { variant: 'EXECUTED', size: 'md' },
   render: () => (
     <div className="bg-[#0B090D] p-6 rounded-xl space-y-3 min-w-96">
       <p className="text-[#9CA3AF] text-xs font-mono mb-4">
@@ -116,6 +117,7 @@ export const AllVariants: Story = {
 
 export const SizeComparison: Story = {
   name: 'sm vs md 크기 비교',
+  args: { variant: 'BLOCKED_AGENT', size: 'md' },
   render: () => (
     <div className="bg-[#0B090D] p-6 rounded-xl space-y-4">
       <div className="space-y-2">

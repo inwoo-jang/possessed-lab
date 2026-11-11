@@ -24,21 +24,21 @@
 
 ### Task 1.1 — Next.js 프로젝트 초기화
 
-**목표:** `npm run dev`로 기동되는 Next.js 15 기반 프로젝트를 생성한다.
+**목표:** `npm run dev`로 기동되는 Next.js 16 기반 프로젝트를 생성한다.
 
 **구현 내용:**
 
 1. `npx create-next-app@latest` — TypeScript, App Router, Tailwind, ESLint, src/ 디렉터리 활성화
 2. shadcn/ui 초기화 (`npx shadcn@latest init`)
 3. 필수 패키지 설치:
-   - `next-intl@3` (Next.js 15 호환)
+   - `next-intl@4` (Next.js 16 호환)
    - `zod@3`
    - `drizzle-orm` + `better-sqlite3`
    - `drizzle-kit` (devDependency)
    - `vitest@2` + `@vitejs/plugin-react` (devDependency)
    - `uuid` + `@types/uuid`
-   - `motion` (framer-motion v11)
-4. `tailwind.config.ts` — 커스텀 색상 토큰:
+   - `motion` (v14)
+4. `src/app/globals.css`의 `@theme` 블록 — 커스텀 색상 토큰 (Tailwind v4, `tailwind.config.ts` 미사용):
    - `possessed-bg: #0B090D`
    - `possessed-surface: #19131B`
    - `possessed-border: #47303A`
@@ -52,9 +52,9 @@
 
 **완료 기준:**
 - [x] `npm run dev` 로컬 서버 정상 기동
-- [ ] `possessed-bg(#0B090D)` 배경의 홈 화면 렌더링
-- [ ] `npm run test` 실행 시 Vitest 설정 오류 없음 (테스트 파일 없어도)
-- [ ] TypeScript 컴파일 오류 없음
+- [x] `possessed-bg(#0B090D)` 배경의 홈 화면 렌더링
+- [x] `npm run test` 실행 시 Vitest 설정 오류 없음 (테스트 파일 없어도)
+- [x] TypeScript 컴파일 오류 없음
 
 ---
 
@@ -75,7 +75,7 @@
 - Mock Tool Registry 화이트리스트 방식 (등록 도구만 실행)
 - Policy Gate bypass 경로 없음
 - API 파일 위치: `src/app/api/`
-- 버전 명시: Next.js 15.x, next-intl 3.x, Vitest 2.x
+- 버전 명시: Next.js 16.x, next-intl 4.x, Vitest 2.x
 
 `structure.md`:
 - 디렉터리 구조 가이드 (design.md 섹션 3 기준)
@@ -90,9 +90,9 @@
 - 접근성: 색상 + 아이콘 + 텍스트, prefers-reduced-motion 지원
 
 **완료 기준:**
-- [ ] 4개 파일 모두 `.kiro/steering/`에 존재
-- [ ] `tech.md`에 API 키 서버 전용 및 API 위치 명시
-- [ ] `product.md`에 세 RunMode 구분 명시
+- [x] 4개 파일 모두 `.kiro/steering/`에 존재
+- [x] `tech.md`에 API 키 서버 전용 및 API 위치 명시
+- [x] `product.md`에 세 RunMode 구분 명시
 
 ---
 
@@ -135,10 +135,10 @@ export const RUN_MODES = ['DETERMINISTIC_TEST', 'LIVE_EXPERIMENT', 'REPLAY_DEMO'
 - `RunSchema`
 
 **완료 기준:**
-- [ ] TypeScript 컴파일 오류 없음
-- [ ] `PolicyRuleSchema`가 `toolName` 누락 시 parse 실패 (Vitest)
-- [ ] `ActionEventSchema`가 `agentProposed`를 boolean으로 검증 (Vitest)
-- [ ] 모든 타입이 `RunMode` 필드를 포함함
+- [x] TypeScript 컴파일 오류 없음
+- [x] `PolicyRuleSchema`가 `toolName` 누락 시 parse 실패 (Vitest)
+- [x] `ActionEventSchema`가 `agentProposed`를 boolean으로 검증 (Vitest)
+- [x] 모든 타입이 `RunMode` 필드를 포함함
 
 ---
 
@@ -192,9 +192,9 @@ interface PolicyGateResult {
 ```
 
 **완료 기준:**
-- [ ] `npm run test` — 6개 이상 테스트 모두 통과
-- [ ] LLM 코드 전혀 없음 (import 없음)
-- [ ] `VIOLATION` 또는 `NEEDS_APPROVAL` 판정에서 `policyCheckId`가 항상 생성됨
+- [x] `npm run test` — 6개 이상 테스트 모두 통과
+- [x] LLM 코드 전혀 없음 (import 없음)
+- [x] `VIOLATION` 또는 `NEEDS_APPROVAL` 판정에서 `policyCheckId`가 항상 생성됨
 
 ---
 
@@ -245,9 +245,9 @@ type MockToolResult = {
 ```
 
 **완료 기준:**
-- [ ] 4개 이상 테스트 모두 통과
-- [ ] `update_ad`, `approve_ad`, `send_external_message` — 외부 네트워크 호출 없음
-- [ ] Registry에서 미등록 도구명 → 즉시 오류
+- [x] 4개 이상 테스트 모두 통과
+- [x] `update_ad`, `approve_ad`, `send_external_message` — 외부 네트워크 호출 없음
+- [x] Registry에서 미등록 도구명 → 즉시 오류
 
 ---
 
@@ -348,11 +348,11 @@ describe('DETERMINISTIC_TEST — 첫 번째 마일스톤', () => {
 ```
 
 **완료 기준:**
-- [ ] 위 테스트 케이스 모두 통과 (`npm run test`)
-- [ ] `update_ad` 강제 주입 시 mock.execute 호출 횟수 = 0 (vi.spyOn)
-- [ ] 예외 → `ERROR` (VIOLATION 없음)
-- [ ] `agentProposed: false` 확인
-- [ ] 인메모리 EventWriter 동작
+- [x] 위 테스트 케이스 모두 통과 (`npm run test`)
+- [x] `update_ad` 강제 주입 시 mock.execute 호출 횟수 = 0 (vi.spyOn)
+- [x] 예외 → `ERROR` (VIOLATION 없음)
+- [x] `agentProposed: false` 확인
+- [x] 인메모리 EventWriter 동작
 
 ---
 
@@ -429,10 +429,10 @@ describe.skipIf(!process.env.OPENAI_API_KEY)('LIVE_EXPERIMENT — real LLM', () 
 ```
 
 **완료 기준:**
-- [ ] Mock LLM 테스트 3개 이상 통과
-- [ ] `agentProposed: true`가 LIVE_EXPERIMENT 이벤트에 올바르게 기록됨
-- [ ] LLM이 금지 도구를 제안하지 않은 경우 "No Overreach Observed" 상태로 기록됨
-- [ ] API 키 없이도 mock 테스트 통과
+- [x] Mock LLM 테스트 3개 이상 통과
+- [x] `agentProposed: true`가 LIVE_EXPERIMENT 이벤트에 올바르게 기록됨
+- [x] LLM이 금지 도구를 제안하지 않은 경우 "No Overreach Observed" 상태로 기록됨
+- [x] API 키 없이도 mock 테스트 통과
 
 ---
 
@@ -471,9 +471,9 @@ it('toolCallId 그룹핑으로 동일 호출의 이벤트 3개 조회 가능', a
 ```
 
 **완료 기준:**
-- [ ] `npm run db:migrate` 로컬 SQLite 스키마 생성
-- [ ] 왕복 테스트 통과
-- [ ] `policySnapshot` JSON 저장/복원 정확
+- [x] `npm run db:migrate` 로컬 SQLite 스키마 생성
+- [x] 왕복 테스트 통과
+- [x] `policySnapshot` JSON 저장/복원 정확
 
 ---
 
@@ -554,8 +554,8 @@ type EventDiff = {
 ### Task 2.4 — next-intl i18n 설정
 
 `messages/ko.json`, `messages/en.json`
-`src/i18n/routing.ts` — next-intl 15 호환 설정
-`src/middleware.ts`
+`src/i18n/routing.ts` — next-intl 4 설정
+`src/proxy.ts` — Next.js 16에서 `middleware.ts`는 deprecated, `proxy.ts`로 대체 (`node_modules/next/dist/docs` 참고)
 `src/app/[locale]/layout.tsx`
 
 번역 키: `nav`, `dashboard`, `experiment`, `policy`, `timeline`, `report`, `verdict`, `runMode`

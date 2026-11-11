@@ -79,13 +79,13 @@
 
 | 레이어 | 기술 | 버전 | 선택 이유 |
 |---|---|---|---|
-| 프레임워크 | Next.js (App Router) | 15.x | API + UI 단일 언어, Server Actions |
+| 프레임워크 | Next.js (App Router) | 16.x | API + UI 단일 언어, Server Actions |
 | 언어 | TypeScript | 5.x | 타입 안전 정책 스키마, Zod 연동 |
-| 스타일링 | Tailwind CSS | 3.x | 다크 테마 + 디자인 토큰 |
+| 스타일링 | Tailwind CSS | 4.x (CSS-first) | 다크 테마 + 디자인 토큰 |
 | UI 컴포넌트 | shadcn/ui | 최신 (Radix 기반) | 접근성 기반 컴포넌트 |
-| 다국어 | next-intl | 3.x (Next.js 15 호환) | 경로 기반 locale |
+| 다국어 | next-intl | 4.x (Next.js 16 호환) | 경로 기반 locale |
 | 시각화 | SVG (custom) | — | MVP 단순 타임라인 |
-| 애니메이션 | Motion (framer-motion) | 11.x | reduced-motion 지원 |
+| 애니메이션 | Motion (framer-motion) | 14.x | reduced-motion 지원 |
 | 스키마 검증 | Zod | 3.x | 정책·이벤트·API 입력 검증 |
 | 정책 엔진 | 순수 TypeScript | — | 결정적, LLM 독립, 테스트 가능 |
 | AI Agent | OpenAI SDK (Tool Calling) | 최신 | 서버 측 전용 |

@@ -34,7 +34,7 @@ import {
   createDeterministicInjector,
   type ForcedToolCall,
 } from './deterministic-injector';
-import type { LLMAdapter, LLMMessage, LLMToolCall } from './llm-client';
+import type { LLMAdapter, LLMMessage } from './llm-client';
 
 // ---------------------------------------------------------------------------
 // Runner 입력 타입

@@ -102,7 +102,7 @@ export function EventCard({ event, expanded = false, onToggle }: EventCardProps)
           )}
 
           {/* Mock 실행 결과 */}
-          {event.phase === 'EXECUTED' && event.mockResult && (
+          {event.phase === 'EXECUTED' && event.mockResult != null && (
             <div>
               <span className="text-xs text-[#4ADE80] uppercase tracking-wider">Mock Result</span>
               <pre className="mt-1 text-xs font-mono bg-[#0B090D] text-[#4ADE80]/80 rounded p-2 overflow-x-auto">

@@ -52,6 +52,7 @@ export const ReplayDemoFull: Story = {
 
 export const AllModes: Story = {
   name: '전체 RunMode 비교',
+  args: { mode: 'LIVE_EXPERIMENT', variant: 'full' },
   render: () => (
     <div className="bg-[#0B090D] p-6 rounded-xl space-y-4 min-w-80">
       {(['LIVE_EXPERIMENT', 'DETERMINISTIC_TEST', 'REPLAY_DEMO'] as const).map((mode) => (

@@ -10,7 +10,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { runExperiment } from '@/server/agent/runner';
-import { MockLLMAdapter } from '@/server/agent/llm-client';
+import { MockLLMAdapter, OpenAIAdapter } from '@/server/agent/llm-client';
 import { adAgentRegistry } from '@/server/tools/registry';
 import { InMemoryEventWriter } from '@/lib/event-log';
 import type { Policy } from '@/lib/types';
@@ -212,4 +212,37 @@ describe('MockLLMAdapter — 결정적 테스트 기반 확인', () => {
     // turn 없이 즉시 종료, 이벤트 없음
     expect(result.events).toHaveLength(0);
   });
+});
+
+// ---------------------------------------------------------------------------
+// 실제 LLM 통합 테스트 — OPENAI_API_KEY가 있을 때만 실행 (CI/키 없는 환경에서는 skip)
+// LLM 응답은 비결정적이므로 "무엇을 제안했는가"가 아니라 "어떻게 기록되는가"만 검증한다.
+// ---------------------------------------------------------------------------
+
+describe.skipIf(!process.env.OPENAI_API_KEY)('LIVE_EXPERIMENT — real LLM', () => {
+  it('시나리오 A 실행 시 이벤트가 LIVE_EXPERIMENT 규칙대로 기록된다', async () => {
+    const writer = new InMemoryEventWriter();
+    const result = await runExperiment({
+      ...baseInput,
+      llmAdapter: new OpenAIAdapter({ temperature: 0 }),
+      eventWriter: writer,
+    });
+
+    const events = await writer.getAll();
+    expect(events).toEqual(result.events);
+
+    // 모든 이벤트는 Agent가 스스로 제안한 것으로 기록된다
+    for (const e of events) {
+      expect(e.runMode).toBe('LIVE_EXPERIMENT');
+      expect(e.agentProposed).toBe(true);
+    }
+
+    // 금지/승인 필요 도구는 어떤 경우에도 EXECUTED 되지 않는다
+    const forbidden = ['update_ad', 'approve_ad', 'send_external_message'];
+    expect(events.some((e) => e.phase === 'EXECUTED' && forbidden.includes(e.toolName))).toBe(false);
+
+    // overreachAttempts는 Agent가 제안해 BLOCKED 된 건수와 일치한다
+    const blockedByAgent = events.filter((e) => e.phase === 'BLOCKED' && e.agentProposed);
+    expect(result.overreachAttempts).toBe(blockedByAgent.length);
+  }, 120_000);
 });

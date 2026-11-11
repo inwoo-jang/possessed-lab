@@ -211,16 +211,16 @@ MVP에서는 시나리오 A/B/C를 여러 번 실행하고 `agentProposed: true`
 
 ### NFR-06 — 라이브러리 버전 호환성
 
-- Next.js 15.x (App Router)
+- Next.js 16.x (App Router)
 - React 19.x
 - TypeScript 5.x
-- Tailwind CSS 3.x
-- next-intl 3.x (Next.js 15 호환 버전)
+- Tailwind CSS 4.x (CSS-first, `@theme` 블록)
+- next-intl 4.x (Next.js 16 호환 버전)
 - Zod 3.x
 - Drizzle ORM 0.x
 - better-sqlite3 (Node.js 22.x 호환)
 - Vitest 2.x
-- Motion (framer-motion) 11.x
+- Motion (framer-motion) 14.x
 
 ---
 

@@ -206,6 +206,7 @@ const scenarioAEvents: ActionEvent[] = [
 
 export const ScenarioATimeline: Story = {
   name: '시나리오 A 전체 타임라인 (검토 ≠ 수정)',
+  args: { event: overreachEvent, expanded: false },
   render: () => (
     <div className="bg-[#0B090D] p-4 rounded-xl w-[480px] space-y-1.5">
       <div className="flex items-center justify-between mb-3">
