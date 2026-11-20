@@ -303,23 +303,32 @@ type Run = {
 ### 4.4 Scenario
 
 ```typescript
+type Locale = 'ko' | 'en';
+type LocalizedText = Record<Locale, string>;   // 시나리오 문구는 한/영을 항상 함께 가진다
+
 type ScenarioVariant = {
   id: string;
-  request: string;      // 사용자 요청 문장 변형
-  locale: 'ko' | 'en';
-  note?: string;        // 변형 의도 설명 (예: "더 모호한 표현")
+  request: LocalizedText;          // 사용자 요청 문장 변형
+  note: LocalizedText;             // 변형 의도 설명 (예: "더 모호한 표현")
+  /**
+   * true = 표현이 모호해져 사용자 의도 자체가 달라질 수 있음.
+   * 기본 정책으로 자동 판정하지 않고, 사람이 허용 범위를 다시 확정해야 한다.
+   */
+  requiresPolicyReview: boolean;
 };
 
 type Scenario = {
   id: string;
-  name: string;
-  description: string;
-  baseRequest: string;          // 기본 요청 문장
-  variants: ScenarioVariant[];  // Phase 2: 시도율 비교용 변형
+  name: LocalizedText;
+  description: LocalizedText;
+  baseRequest: LocalizedText;
+  variants: ScenarioVariant[];     // 시도율 비교용 변형
   expectedViolationTools: string[]; // 관측 대상 금지 도구 목록
-  locale: 'ko' | 'en';
+  deterministicCalls: ScenarioToolCall[]; // DETERMINISTIC_TEST용 강제 호출 (허용 + 관측 대상)
 };
 ```
+
+시나리오는 시스템 프롬프트를 갖지 않는다. 금지 도구를 언급하는 프롬프트는 Agent의 자발적 과잉 행동 관측을 오염시키므로, 프롬프트는 Run 실행 단계에서 중립적으로 구성하고 `promptVersion`으로 기록한다. 기본 정책은 `getScenarioPolicy(scenarioId)`가 매 호출마다 새 객체로 생성한다.
 
 ### 4.5 DB 스키마 (Drizzle + SQLite)
 
@@ -514,6 +523,23 @@ function createDeterministicInjector(calls: ForcedToolCall[]): ToolCallSource;
  *   approve_ad(adId)                     → MockApprovalState에 따라 실행 여부 결정
  */
 ```
+
+**LLM에 전달하는 도구 정의의 중립성 (측정 타당성)**
+
+Agent가 보는 도구 설명은 측정 대상의 일부다. 다음을 지킨다.
+
+- 설명은 실제 제품 도구가 스스로를 설명하는 것처럼 쓴다. "mock", "실제로는 변경되지 않음", "금지" 같은
+  표현을 넣지 않는다. 부작용이 없다고 알려 주면 Agent가 더 쉽게 호출해 과잉 행동 시도율이 부풀려진다.
+  mock이라는 사실은 실행 결과(`mockResult`)와 UI 배지로만 알린다.
+- 설명은 한/영 쌍(`description: LocalizedText`)이며 run의 `locale`에 맞춰 전달한다.
+  프롬프트는 영어인데 도구 설명만 한국어인 혼합은 한/영 비교에 언어 요인을 섞는다.
+- 파라미터 설명은 LLM에 전달하지 않는다(파라미터 이름만 사용).
+- 금지·승인 필요 도구도 LLM에 숨기지 않고 모두 전달한다. 그래야 Agent의 자발적 선택을 관측할 수 있다.
+- 이 규칙은 `tests/tools/tool-definitions.test.ts`가 검증한다.
+
+알려진 한계: 도구가 실제로 실행된 뒤 LLM에 돌려주는 결과(`data`)에는 아직 `mocked`/`warning` 필드가 섞여 있다.
+금지 도구는 실행되지 않으므로 첫 시도 관측에는 영향이 없지만, 승인이 부여된 `approve_ad`처럼 정책이 허용한 경우의
+후속 행동에는 영향을 줄 수 있다. 실제 모델 실험 전에 결과 형식을 분리하는 것을 권장한다.
 
 ### 5.5 이벤트 순서 및 toolCallId 그룹핑
 

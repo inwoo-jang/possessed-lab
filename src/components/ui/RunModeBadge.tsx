@@ -6,9 +6,11 @@
  *   DETERMINISTIC_TEST — 결정적 테스트 (파란 강조)
  *   REPLAY_DEMO       — 사전 기록 결과 (항상 구분 표시, 연한 색)
  *
- * REPLAY_DEMO는 반드시 "Pre-recorded result — not a live LLM run" 문구를 표시.
+ * REPLAY_DEMO는 full variant에서 "Pre-recorded result — not a live LLM run" 문구를 표시한다.
+ * 문구는 messages의 `runMode.<mode>`(label, fullLabel, aria)에서 가져온다.
  */
 
+import { useTranslations } from 'next-intl';
 import type { RunMode } from '@/lib/types';
 
 interface RunModeBadgeProps {
@@ -18,52 +20,31 @@ interface RunModeBadgeProps {
   className?: string;
 }
 
-const CONFIG: Record<
-  RunMode,
-  { icon: string; label: string; fullLabel: string; colorClass: string; ariaLabel: string }
-> = {
-  LIVE_EXPERIMENT: {
-    icon: '●',
-    label: 'Live LLM Run',
-    fullLabel: 'Live LLM Run',
-    colorClass: 'bg-[#B91C3B]/15 text-[#FB7185] border-[#B91C3B]/40',
-    ariaLabel: 'Live LLM experiment — real agent behavior',
-  },
-  DETERMINISTIC_TEST: {
-    icon: '◆',
-    label: 'Deterministic Test',
-    fullLabel: 'Deterministic Test',
-    colorClass: 'bg-blue-900/20 text-blue-400 border-blue-700/30',
-    ariaLabel: 'Deterministic test — forced tool calls, no LLM',
-  },
-  REPLAY_DEMO: {
-    icon: '▶',
-    label: 'Pre-recorded',
-    fullLabel: 'Pre-recorded result — not a live LLM run',
-    colorClass: 'bg-[#47303A]/30 text-[#9CA3AF] border-[#47303A]/50',
-    ariaLabel: 'Pre-recorded demo result — not a live LLM run',
-  },
+const STYLE: Record<RunMode, { icon: string; colorClass: string }> = {
+  LIVE_EXPERIMENT:    { icon: '●', colorClass: 'bg-[#B91C3B]/15 text-[#FB7185] border-[#B91C3B]/40' },
+  DETERMINISTIC_TEST: { icon: '◆', colorClass: 'bg-blue-900/20 text-blue-400 border-blue-700/30' },
+  REPLAY_DEMO:        { icon: '▶', colorClass: 'bg-[#47303A]/30 text-[#9CA3AF] border-[#47303A]/50' },
 };
 
 export function RunModeBadge({ mode, variant = 'compact', className = '' }: RunModeBadgeProps) {
-  const cfg = CONFIG[mode];
-  const label = variant === 'full' ? cfg.fullLabel : cfg.label;
+  const t = useTranslations('runMode');
+  const style = STYLE[mode];
 
   return (
     <span
       role="status"
-      aria-label={cfg.ariaLabel}
+      aria-label={t(`${mode}.aria`)}
       className={[
         'inline-flex items-center gap-1.5 text-xs font-mono font-medium',
         'px-2 py-0.5 rounded border',
-        cfg.colorClass,
+        style.colorClass,
         className,
       ].join(' ')}
     >
       <span aria-hidden="true" className={mode === 'LIVE_EXPERIMENT' ? 'animate-pulse motion-reduce:animate-none' : ''}>
-        {cfg.icon}
+        {style.icon}
       </span>
-      <span>{label}</span>
+      <span>{variant === 'full' ? t(`${mode}.fullLabel`) : t(`${mode}.label`)}</span>
     </span>
   );
 }

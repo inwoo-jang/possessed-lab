@@ -130,21 +130,44 @@ export type PolicySnapshot = Policy & {
 // Scenario
 // ---------------------------------------------------------------------------
 
+export type Locale = 'ko' | 'en';
+
+/** 한/영 문구 쌍. 시나리오 문구는 두 언어를 항상 함께 가진다. */
+export type LocalizedText = Record<Locale, string>;
+
+/** DETERMINISTIC_TEST에서 강제 주입할 도구 호출 (ForcedToolCall과 구조 동일) */
+export type ScenarioToolCall = {
+  toolName: string;
+  args: Record<string, unknown>;
+};
+
+/**
+ * 기본 요청의 표현 변형.
+ *
+ * 변형은 "표현 조건에 따라 과잉 행동 시도율이 달라지는가"를 측정하기 위한 것이다.
+ * 표현이 모호해져 사용자 의도 자체가 달라질 수 있는 변형은 requiresPolicyReview: true로
+ * 표시한다. 이런 변형은 기본 정책으로 자동 판정하지 않고, 사람이 허용 범위를 다시 확정해야 한다.
+ */
 export type ScenarioVariant = {
   id: string;
-  request: string;     // 사용자 요청 문장 변형
-  locale: 'ko' | 'en';
-  note?: string;       // 변형 의도 설명
+  request: LocalizedText;
+  note: LocalizedText;             // 변형 의도 설명
+  requiresPolicyReview: boolean;   // true = 의미가 달라질 수 있어 정책 재확정 필요
 };
 
 export type Scenario = {
   id: string;
-  name: string;
-  description: string;
-  baseRequest: string;                    // 기본 요청 문장
-  variants: ScenarioVariant[];            // Phase 2: 시도율 비교용 변형
-  expectedViolationTools: string[];       // 관측 대상 금지 도구 목록
-  locale: 'ko' | 'en';
+  name: LocalizedText;
+  description: LocalizedText;
+  baseRequest: LocalizedText;
+  variants: ScenarioVariant[];
+  /** 이 시나리오에서 Agent의 과잉 행동을 관측하는 대상 도구 */
+  expectedViolationTools: string[];
+  /**
+   * DETERMINISTIC_TEST용 강제 호출 시퀀스.
+   * 허용 도구와 관측 대상(금지) 도구를 섞어 두어, 차단이 정상 업무까지 막지 않는지도 검증한다.
+   */
+  deterministicCalls: ScenarioToolCall[];
 };
 
 // ---------------------------------------------------------------------------
@@ -164,6 +187,20 @@ export type RunMetadata = {
   temperature: number | null;
   promptVersion: string;
   policyVersion: number;
+  /**
+   * 어떤 문구로 실험했는지 기록한다. 표현 조건별 시도율 비교와 재현성의 전제다.
+   * DETERMINISTIC_TEST는 사용자 요청 문장을 쓰지 않으므로 variantId/userRequest가 null이다.
+   */
+  locale: Locale;
+  variantId: string | null;
+  userRequest: string | null;
+  /** requiresPolicyReview 변형을 사람이 확인하고 실행했는지 */
+  policyReviewConfirmed: boolean;
+  /**
+   * Agent가 마지막으로 한 말 (LIVE_EXPERIMENT가 최종 답변으로 끝났을 때만).
+   * 실행이 끝난 뒤에 기록되므로 처음에는 없다. 비밀 값은 마스킹되고 길이가 제한된다.
+   */
+  finalAnswer?: string | null;
 };
 
 export type Run = {
@@ -181,12 +218,75 @@ export type Run = {
 // Run Compare
 // ---------------------------------------------------------------------------
 
+/**
+ * 도구 호출 1건의 최종 결과.
+ * INCOMPLETE는 제안만 기록되고 결과 이벤트가 없는 경우(실행 중단 등)다.
+ */
+export type CallOutcome = 'EXECUTED' | 'BLOCKED' | 'ERROR' | 'INCOMPLETE';
+
+/**
+ * 두 run의 도구 호출 1건 비교.
+ *
+ * 매칭 기준은 step 번호가 아니라 (toolName, occurrenceIndex)다.
+ * LLM은 호출 순서와 횟수가 달라질 수 있어 step으로 맞추면 엉뚱한 호출끼리 비교된다.
+ * 한쪽에만 있는 호출은 다른 쪽 값이 null이다.
+ * (agentProposed를 false로 채우면 "강제 주입"으로 오해되므로 null을 쓴다)
+ */
 export type EventDiff = {
   toolName: string;
-  occurrenceIndex: number;          // 동일 toolName 중 n번째
+  occurrenceIndex: number;          // 동일 toolName 중 n번째 (0부터)
   verdictA: PolicyVerdict | null;
   verdictB: PolicyVerdict | null;
-  agentProposedA: boolean;
-  agentProposedB: boolean;
+  outcomeA: CallOutcome | null;
+  outcomeB: CallOutcome | null;
+  agentProposedA: boolean | null;
+  agentProposedB: boolean | null;
+  /**
+   * 판정 또는 결과가 다르거나, 한쪽에만 있는 호출이면 true.
+   * agentProposed만 다른 경우(예: 강제 주입 vs LLM)는 정책 결과의 변화가 아니므로 true가 아니다.
+   */
   changed: boolean;
+};
+
+export type ComparisonWarningCode =
+  | 'RUN_MODE_MISMATCH'
+  | 'SCENARIO_MISMATCH'
+  | 'RUN_NOT_COMPLETED';
+
+export type ComparisonWarning = {
+  code: ComparisonWarningCode;
+  message: string;
+};
+
+/** 정책 스냅샷 간 규칙 차이. 규칙이 한쪽에만 있으면 다른 쪽은 null. */
+export type PolicyRuleDiff = {
+  toolName: string;
+  a: { permission: ToolPermission; approvalGranted: boolean | null } | null;
+  b: { permission: ToolPermission; approvalGranted: boolean | null } | null;
+};
+
+export type RunComparisonSide = {
+  id: string;
+  experimentId: string;
+  scenarioId: string | null;
+  runMode: RunMode;
+  status: Run['status'];
+  metadata: RunMetadata;
+  policySnapshotAt: string;
+  stats: {
+    overreachAttempts: number;
+    executedCount: number;
+    blockedCount: number;
+    errorCount: number;
+    toolCallCount: number;
+  };
+};
+
+export type RunComparison = {
+  runA: RunComparisonSide;
+  runB: RunComparisonSide;
+  warnings: ComparisonWarning[];
+  diff: EventDiff[];
+  changedCount: number;
+  policyDiff: PolicyRuleDiff[];
 };

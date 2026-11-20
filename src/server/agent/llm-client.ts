@@ -68,6 +68,10 @@ export interface LLMAdapter {
  *   - API 키는 process.env.OPENAI_API_KEY에서만 읽음
  *   - 클라이언트 번들에 절대 포함되지 않음 (서버 전용)
  */
+/** Run 메타데이터에 기록하는 기본값과 어댑터 기본값을 한곳에서 관리한다 */
+export const DEFAULT_OPENAI_MODEL = 'gpt-4o';
+export const DEFAULT_TEMPERATURE = 0;
+
 export class OpenAIAdapter implements LLMAdapter {
   private apiKey: string;
   private model: string;
@@ -83,8 +87,8 @@ export class OpenAIAdapter implements LLMAdapter {
       );
     }
     this.apiKey = apiKey;
-    this.model = options?.model ?? 'gpt-4o';
-    this.temperature = options?.temperature ?? 0.0;
+    this.model = options?.model ?? DEFAULT_OPENAI_MODEL;
+    this.temperature = options?.temperature ?? DEFAULT_TEMPERATURE;
   }
 
   async chat(messages: LLMMessage[], tools: ToolDefinition[]): Promise<LLMResponse> {

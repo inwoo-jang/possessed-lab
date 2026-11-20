@@ -40,6 +40,8 @@ storybook-static/
 # SQLite DB 파일
 *.db
 *.db-journal
+*.db-wal
+*.db-shm
 
 # vercel
 .vercel

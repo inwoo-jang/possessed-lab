@@ -29,9 +29,55 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans, Arial, Helvetica, sans-serif);
+  /* Geist에는 한글 글리프가 없어서 한국어 화면용 시스템 폰트를 폴백으로 둔다 */
+  font-family: var(--font-geist-sans, Arial, Helvetica), "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
 }
 
+/* Policy Violation 잉크 효과 (InkAnimation.tsx)
+   기본 상태에서는 보이지 않고, 저모션이 아닌 환경에서만 애니메이션이 걸린다. */
+.ink-blot {
+  position: absolute;
+  border-radius: 9999px;
+  opacity: 0;
+  background: radial-gradient(circle, rgba(185, 28, 59, 0.55) 0%, rgba(185, 28, 59, 0.25) 45%, transparent 70%);
+  transform: scale(0);
+}
+.ink-blot-strong {
+  top: -40%;
+  left: -10%;
+  width: 70%;
+  aspect-ratio: 1;
+}
+.ink-blot-second {
+  top: auto;
+  bottom: -60%;
+  left: auto;
+  right: -10%;
+  width: 55%;
+  background: radial-gradient(circle, rgba(251, 113, 133, 0.35) 0%, rgba(185, 28, 59, 0.2) 45%, transparent 70%);
+}
+.ink-blot-weak {
+  top: -30%;
+  left: -5%;
+  width: 40%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle, rgba(185, 28, 59, 0.3) 0%, rgba(185, 28, 59, 0.12) 45%, transparent 70%);
+}
+@keyframes ink-spread {
+  0% { opacity: 0; transform: scale(0); }
+  25% { opacity: 1; }
+  100% { opacity: 0.85; transform: scale(3.2); }
+}
+@keyframes ink-spread-weak {
+  0% { opacity: 0; transform: scale(0); }
+  30% { opacity: 1; }
+  100% { opacity: 0.5; transform: scale(2.2); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ink-blot-strong { animation: ink-spread 1.4s ease-out forwards; }
+  .ink-blot-second { animation-delay: 0.25s; }
+  .ink-blot-weak { animation: ink-spread-weak 0.9s ease-out forwards; }
+}
 /* 저모션 모드: 모든 애니메이션 비활성화 */
 @media (prefers-reduced-motion: reduce) {
   *,

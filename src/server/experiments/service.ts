@@ -130,6 +130,21 @@ export async function updateRunStatus(
     .where(eq(runs.id, runId));
 }
 
+/** 실행이 끝난 뒤에 알게 되는 값(최종 답변 등)을 metadata에 합쳐 저장한다. 나머지 필드는 유지한다. */
+export async function updateRunMetadata(
+  db: DB,
+  runId: string,
+  patch: Partial<RunMetadata>
+): Promise<void> {
+  const run = await getRunById(db, runId);
+  if (!run) return;
+
+  await db
+    .update(runs)
+    .set({ metadata: JSON.stringify({ ...run.metadata, ...patch }) })
+    .where(eq(runs.id, runId));
+}
+
 export async function getRunById(db: DB, id: string): Promise<Run | null> {
   const rows = await db
     .select()
@@ -196,6 +211,15 @@ export async function getRunEvents(db: DB, runId: string): Promise<ActionEvent[]
     .from(actionEvents)
     .where(eq(actionEvents.runId, runId))
     .orderBy(actionEvents.step); // step 순서 보장
+
+  return rows.map(deserializeActionEvent);
+}
+
+export async function listAllActionEvents(db: DB): Promise<ActionEvent[]> {
+  const rows = await db
+    .select()
+    .from(actionEvents)
+    .orderBy(actionEvents.timestamp, actionEvents.step);
 
   return rows.map(deserializeActionEvent);
 }

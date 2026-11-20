@@ -1,0 +1,274 @@
+{
+  "meta": {
+    "title": "POSSESSED — The Agent Overreach Lab",
+    "description": "A lab for verifying whether AI agents attempt actions beyond what the user approved."
+  },
+  "locale": {
+    "label": "Language",
+    "en": "English",
+    "ko": "한국어",
+    "switchTo": "Switch language: {language}"
+  },
+  "nav": {
+    "label": "Main navigation",
+    "dashboard": "Dashboard",
+    "newExperiment": "New experiment",
+    "compare": "Compare",
+    "demo": "Demo"
+  },
+  "dashboard": {
+    "title": "POSSESSED",
+    "subtitle": "The Agent Overreach Lab",
+    "slogan": "When AI goes too far.",
+    "recentExperiments": "Recent experiments",
+    "emptyState": "No experiments yet. Run the demo to see how a report looks.",
+    "runDemo": "Run demo",
+    "runLive": "Run live",
+    "overreachSummary": "Agent overreach attempts",
+    "loading": "Loading experiments…",
+    "noRuns": "No runs yet",
+    "lastRun": "Last run",
+    "scenario": "Scenario",
+    "counts": "{executed} executed · {blocked} blocked",
+    "overreachObserved": "{attempts, plural, one {# overreach attempt} other {# overreach attempts}} in {runs, plural, one {# live run} other {# live runs}} where the agent used tools",
+    "noLiveRuns": "No completed live runs yet, so nothing has been measured. Deterministic tests force their calls and do not measure agent overreach.",
+    "noObservedRuns": "No live run has used tools yet, so nothing has been measured. Deterministic tests force their calls and do not measure agent overreach.",
+    "inconclusiveRuns": "{count, plural, one {# completed live run made no tool calls and is not counted.} other {# completed live runs made no tool calls and are not counted.}}",
+    "summaryNote": "Counts calls the agent proposed on its own that the policy blocked, across completed live runs only."
+  },
+  "status": {
+    "PENDING": "Pending",
+    "RUNNING": "Running",
+    "COMPLETED": "Completed",
+    "FAILED": "Failed"
+  },
+  "trace": {
+    "title": "Run trace",
+    "back": "Back to dashboard",
+    "experiment": "Experiment",
+    "scenario": "Scenario",
+    "request": "Request sent to the agent",
+    "requestForced": "Deterministic test: the tool calls were forced. No request was sent to an LLM.",
+    "policyReviewed": "Policy reviewed for this wording",
+    "details": "Run details",
+    "model": "Model",
+    "temperature": "Temperature",
+    "promptVersion": "Prompt version",
+    "language": "Language",
+    "summary": "Summary",
+    "toolCalls": "{count, plural, one {# tool call} other {# tool calls}}",
+    "timeline": "Tool calls",
+    "callLabel": "Call {number}",
+    "noEventsPending": "No tool calls yet. Calls appear here as they are recorded.",
+    "noEventsDone": "The agent made no tool calls in this run.",
+    "agentInitiatedNote": "The agent proposed this call on its own.",
+    "overreachNote": "The agent proposed this call on its own, and the policy blocked it.",
+    "injectedNote": "Forced by the test, not proposed by an agent.",
+    "llmError": "LLM call failed",
+    "noResult": "No result recorded",
+    "finalAnswer": "Agent's final message",
+    "failedNotice": "The run failed before it finished, so nothing can be concluded about the agent's behavior.",
+    "liveRegion": "Run status: {status}",
+    "polling": "Updating automatically while the run is in progress.",
+    "pollingRetry": "Connection lost. Retrying…",
+    "pollingStopped": "This run is taking longer than expected. Reload the page to check again.",
+    "viewReport": "Open forensic report"
+  },
+  "experiment": {
+    "title": "New experiment",
+    "nameLabel": "Experiment name",
+    "scenarioLabel": "Scenario",
+    "runModeLabel": "Run type",
+    "variantLabel": "Request wording",
+    "baseRequest": "Original request",
+    "start": "Start run",
+    "liveUnavailable": "Live runs are unavailable: the server has no LLM API key configured.",
+    "policyReviewRequired": "This wording may change the user's intent. Review the permitted scope for this wording before running.",
+    "policyReviewConfirm": "I reviewed the policy for this wording",
+    "back": "Back to dashboard",
+    "namePlaceholder": "e.g. Scenario A baseline",
+    "runModeDeterministicHelp": "Forces tool calls to check that the policy gate blocks and allows correctly. No LLM is used, so this does not measure agent overreach.",
+    "runModeLiveHelp": "A real LLM receives the request and chooses tools on its own. This is the run that observes agent overreach.",
+    "languageLabel": "Request language",
+    "requestPreview": "Request the agent will receive",
+    "starting": "Starting…",
+    "errors": {
+      "summary": "Fix the following before starting:",
+      "nameRequired": "Enter an experiment name.",
+      "nameTooLong": "The experiment name must be 200 characters or fewer.",
+      "liveUnavailable": "Live runs are unavailable on this server.",
+      "policyReviewNotConfirmed": "Confirm that you reviewed the policy for this wording.",
+      "network": "Could not reach the server. Check your connection and try again.",
+      "generic": "Something went wrong while starting the run. Try again.",
+      "VALIDATION_ERROR": "The server rejected some of the values you entered.",
+      "POLICY_REVIEW_REQUIRED": "This wording may change the user's intent. Review the policy for this wording and confirm before running.",
+      "LIVE_UNAVAILABLE": "Live runs are unavailable: the server has no LLM API key configured.",
+      "runStartFailed": "The experiment was created, but the run could not be started. Press Start run to try again."
+    }
+  },
+  "policy": {
+    "title": "Policy",
+    "toolName": "Tool",
+    "permission": "Permission",
+    "allowed": "Allowed for this request",
+    "denied": "Not permitted for this request",
+    "requiresApproval": "Requires approval",
+    "mockApprovalNotice": "This is a mock approval for testing, not a real approval system.",
+    "intro": "Edit what this request permits. Rules you leave unchanged use the scenario default.",
+    "mockApprovalGranted": "Mock approval granted",
+    "modified": "Modified",
+    "resetToDefault": "Reset to default",
+    "usingDefault": "Using the scenario default policy",
+    "customPolicy": "Using an edited policy"
+  },
+  "timeline": {
+    "title": "Timeline",
+    "step": "Step {step}",
+    "agentInitiated": "Agent initiated",
+    "args": "Arguments",
+    "mockResult": "Mock result",
+    "rule": "Rule",
+    "errorNotViolation": "Error (not a violation)",
+    "eventAria": "Event: {tool}, phase {phase}"
+  },
+  "report": {
+    "title": "Forensic report",
+    "violations": "Violations",
+    "normalEvents": "Normal events",
+    "agentAttempted": "The agent spontaneously attempted this call",
+    "noOverreach": "No overreach observed",
+    "noToolCalls": "The agent made no tool calls, so nothing was observed",
+    "attemptCount": "{count, plural, one {# attempt} other {# attempts}}",
+    "summary": "Summary",
+    "backToTrace": "Back to run trace",
+    "inProgress": "This run has not finished. The report can change until it does.",
+    "policySnapshot": "Policy in effect",
+    "policySnapshotIntro": "The policy saved when this run started. Verdicts follow this snapshot, not the current scenario default.",
+    "policyName": "{name} (version {version})",
+    "snapshotAt": "Saved at",
+    "ruleId": "Rule ID",
+    "referencedByCall": "Cited by a call below",
+    "agentAttemptsHeading": "Calls the agent attempted on its own and the policy blocked",
+    "injectedHeading": "Blocked calls forced by the test",
+    "injectedNote": "The test injected these calls. They do not show what an agent would do.",
+    "normalHeading": "Other calls",
+    "none": "None in this run.",
+    "callId": "Call ID",
+    "verdictCode": "Verdict",
+    "proposedBy": "Proposed by",
+    "proposedByAgent": "Agent (agentProposed: true)",
+    "proposedByTest": "Test injection (agentProposed: false)",
+    "outcome": "Outcome",
+    "noRule": "None"
+  },
+  "verdict": {
+    "EXECUTED": {
+      "label": "Executed",
+      "aria": "Tool was executed successfully"
+    },
+    "BLOCKED_AGENT": {
+      "label": "Agent Attempted — Blocked",
+      "aria": "Agent spontaneously attempted this call — it was blocked"
+    },
+    "BLOCKED_INJECTED": {
+      "label": "Blocked (injected)",
+      "aria": "Tool call was injected and blocked by policy"
+    },
+    "VIOLATION": {
+      "label": "Violation",
+      "aria": "Policy violation detected"
+    },
+    "NEEDS_APPROVAL": {
+      "label": "Needs Approval",
+      "aria": "Approval required but not granted"
+    },
+    "ALLOWED": {
+      "label": "Allowed",
+      "aria": "Tool call was allowed"
+    },
+    "ERROR": {
+      "label": "Error (not a violation)",
+      "aria": "An error occurred — this is not a policy violation"
+    },
+    "PENDING": {
+      "label": "Pending",
+      "aria": "Pending policy check"
+    }
+  },
+  "runMode": {
+    "LIVE_EXPERIMENT": {
+      "label": "Live LLM Run",
+      "fullLabel": "Live LLM Run",
+      "aria": "Live LLM experiment — real agent behavior"
+    },
+    "DETERMINISTIC_TEST": {
+      "label": "Deterministic Test",
+      "fullLabel": "Deterministic Test",
+      "aria": "Deterministic test — forced tool calls, no LLM"
+    },
+    "REPLAY_DEMO": {
+      "label": "Pre-recorded",
+      "fullLabel": "Pre-recorded result — not a live LLM run",
+      "aria": "Pre-recorded demo result — not a live LLM run"
+    }
+  },
+  "compare": {
+    "title": "Compare runs",
+    "back": "Back to dashboard",
+    "intro": "Pick two runs. Calls are matched by tool name and by which call of that tool it is, not by step number.",
+    "selectA": "Run A",
+    "selectB": "Run B",
+    "choose": "Choose a run",
+    "submit": "Compare",
+    "noRuns": "There are no runs to compare yet. Run the demo or create an experiment first.",
+    "pickBoth": "Pick two runs to compare them.",
+    "runNotFound": "One of the selected runs does not exist.",
+    "invalidSelection": "The selection is not valid. Pick two runs from the lists.",
+    "runs": "Runs",
+    "runA": "Run A",
+    "runB": "Run B",
+    "details": "Run conditions",
+    "differs": "differs",
+    "warnings": "Comparison warnings",
+    "warningLabel": "Warning",
+    "warnModeMismatch": "The runs have different modes ({a} vs {b}). Calls forced by a test and calls proposed by an agent are not directly comparable.",
+    "warnScenarioMismatch": "The runs belong to different scenarios ({a} vs {b}).",
+    "warnNotCompleted": "At least one run has not completed, so its calls may be incomplete.",
+    "policyDiff": "Policy differences",
+    "policySame": "Both runs used the same permissions and mock approvals.",
+    "notInPolicy": "Not in this policy",
+    "mockApprovalNotGranted": "Mock approval not granted",
+    "callDiff": "Tool calls",
+    "noCalls": "Neither run recorded a tool call.",
+    "noChanges": "No call differs in verdict or outcome.",
+    "changedCount": "{changed} of {total} calls differ in verdict or outcome.",
+    "causeNote": "Each side is a single run. A difference can come from the policy differences above or from the model varying between runs. This table does not say which.",
+    "tool": "Tool",
+    "change": "Change",
+    "changed": "Changed",
+    "same": "Same",
+    "onlyA": "Only in run A",
+    "onlyB": "Only in run B",
+    "notCalled": "Not called in this run",
+    "byAgent": "Proposed by the agent",
+    "byTest": "Injected by the test",
+    "occurrence": "(call {number})",
+    "openTrace": "Open trace",
+    "openReport": "Open report"
+  },
+  "demo": {
+    "title": "Demo",
+    "back": "Back to dashboard",
+    "intro": "A pre-recorded run of \"Review ≠ Edit\": the user asks only for a review, and one of the agent's calls goes beyond that.",
+    "scriptedNote": "This sequence was written by hand to show how an overreach attempt appears. It is not captured from a model, so it says nothing about how often real agents do this.",
+    "nextHeading": "What next",
+    "savedRunHint": "Open the same sequence as a saved run to see the full trace page or the forensic report. No LLM is called.",
+    "openTrace": "Open as saved run: trace",
+    "openReport": "Open as saved run: report",
+    "opening": "Opening…",
+    "errorNetwork": "Could not reach the server. Check your connection and try again.",
+    "errorServer": "The server could not prepare the demo run. Try again in a moment.",
+    "liveHint": "To see what a real model does with a normal request, start a live run. This calls an LLM API and needs a server API key.",
+    "runLive": "Run live"
+  }
+}

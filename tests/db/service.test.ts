@@ -65,10 +65,14 @@ const testRun: Run = {
   experimentId: testExperiment.id,
   runMode:      'DETERMINISTIC_TEST',
   metadata: {
-    model:         null,
-    temperature:   null,
-    promptVersion: 'v1',
-    policyVersion: 1,
+    model:                 null,
+    temperature:           null,
+    promptVersion:         'v1',
+    policyVersion:         1,
+    locale:                'en',
+    variantId:             null,
+    userRequest:           null,
+    policyReviewConfirmed: false,
   },
   policySnapshot: {
     ...testPolicy,
@@ -377,5 +381,87 @@ describe('Runner → DB 통합 — 실행 이벤트를 DB에 기록하고 복원
     expect(blocked!.toolName).toBe('update_ad');
     expect(blocked!.verdict).toBe('VIOLATION');
     expect(blocked!.agentProposed).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// SQLiteEventWriter — Runner가 DB에 직접 기록
+// ---------------------------------------------------------------------------
+
+describe('SQLiteEventWriter — Runner 이벤트를 DB에 직접 기록한다', () => {
+  let db: TestDB;
+  beforeEach(() => { db = createTestDb(); });
+
+  const policy: Policy = {
+    id: 'p-writer', name: 'Writer Test Policy', version: 1,
+    createdAt: '2026-11-06T00:00:00.000Z',
+    rules: [
+      { id: 'r1', toolName: 'search_rule', permission: 'ALLOWED' },
+      { id: 'r2', toolName: 'update_ad',   permission: 'DENIED'  },
+    ],
+  };
+
+  it('DETERMINISTIC_TEST: Runner 결과와 DB 복원 결과가 완전히 일치한다', async () => {
+    const { runExperiment } = await import('@/server/agent/runner');
+    const { adAgentRegistry } = await import('@/server/tools/registry');
+    const { SQLiteEventWriter } = await import('@/server/experiments/sqlite-event-writer');
+
+    const writer = new SQLiteEventWriter(db);
+    const result = await runExperiment({
+      runMode:      'DETERMINISTIC_TEST',
+      runId:        'run-writer-001',
+      experimentId: 'exp-writer-001',
+      policy,
+      registry:     adAgentRegistry,
+      eventWriter:  writer,
+      forcedCalls: [
+        { toolName: 'search_rule', args: { query: '테스트' } },
+        { toolName: 'update_ad',   args: { adId: 'ad-1', content: 'x' } },
+      ],
+    });
+
+    const fromDb = await writer.getByRunId('run-writer-001');
+    // 저장 → 복원 후에도 Runner가 반환한 이벤트와 동일해야 한다
+    expect(fromDb).toEqual(result.events);
+  });
+
+  it('LIVE_EXPERIMENT(Mock LLM): agentProposed: true가 DB에 보존된다', async () => {
+    const { runExperiment } = await import('@/server/agent/runner');
+    const { adAgentRegistry } = await import('@/server/tools/registry');
+    const { MockLLMAdapter } = await import('@/server/agent/llm-client');
+    const { SQLiteEventWriter } = await import('@/server/experiments/sqlite-event-writer');
+
+    const writer = new SQLiteEventWriter(db);
+    const result = await runExperiment({
+      runMode:      'LIVE_EXPERIMENT',
+      runId:        'run-writer-live',
+      experimentId: 'exp-writer-live',
+      policy,
+      registry:     adAgentRegistry,
+      eventWriter:  writer,
+      systemPrompt: 'test',
+      userRequest:  'test',
+      llmAdapter: new MockLLMAdapter([
+        { type: 'tool_calls', toolCalls: [{ name: 'update_ad', args: { adId: 'a', content: 'b' } }] },
+        { type: 'final_answer', content: 'done' },
+      ]),
+    });
+
+    const fromDb = await writer.getByRunId('run-writer-live');
+    expect(fromDb.every((e) => e.agentProposed === true)).toBe(true);
+    expect(fromDb.every((e) => e.runMode === 'LIVE_EXPERIMENT')).toBe(true);
+    expect(fromDb.filter((e) => e.phase === 'BLOCKED')).toHaveLength(1);
+    expect(result.overreachAttempts).toBe(1);
+  });
+
+  it('getAll은 여러 run의 이벤트를 모두 반환한다', async () => {
+    const { SQLiteEventWriter } = await import('@/server/experiments/sqlite-event-writer');
+    const writer = new SQLiteEventWriter(db);
+
+    await writer.write(makeEvent({ id: 'a1', runId: 'run-A', step: 0 }));
+    await writer.write(makeEvent({ id: 'b1', runId: 'run-B', step: 0 }));
+
+    expect(await writer.getAll()).toHaveLength(2);
+    expect(await writer.getByRunId('run-A')).toHaveLength(1);
   });
 });

@@ -48,6 +48,13 @@ export const SENSITIVE_KEY_PATTERNS = [
   'auth',
 ];
 
+/**
+ * LLM 호출 자체가 실패했을 때 ERROR 이벤트에 기록하는 toolName.
+ * 이 이벤트가 있는 run은 COMPLETED가 아니라 FAILED로 처리한다.
+ * (실패한 실행이 "과잉 행동 없음"으로 집계되는 것을 막기 위함)
+ */
+export const LLM_CALL_TOOL_NAME = '[llm_call]';
+
 /** LIVE_EXPERIMENT 실행 시 최대 도구 호출 스텝 수 */
 export const MAX_AGENT_STEPS = 10;
 

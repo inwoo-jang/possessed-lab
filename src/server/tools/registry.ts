@@ -1,3 +1,4 @@
+import type { Locale } from '@/lib/types';
 import type { MockTool, ToolDefinition } from './types';
 import { AD_AGENT_TOOLS } from './mock-ad-agent';
 
@@ -35,13 +36,16 @@ class MockToolRegistry {
     return Array.from(this.tools.keys());
   }
 
-  /** LLM Tool Calling에 전달할 도구 정의 목록 */
-  toToolDefinitions(): ToolDefinition[] {
+  /**
+   * LLM Tool Calling에 전달할 도구 정의 목록.
+   * 설명 언어를 run의 locale과 맞춘다 (프롬프트는 영어인데 도구 설명만 한국어인 혼합을 방지).
+   */
+  toToolDefinitions(locale: Locale = 'en'): ToolDefinition[] {
     return Array.from(this.tools.values()).map((tool) => ({
       type: 'function' as const,
       function: {
         name: tool.name,
-        description: tool.description,
+        description: tool.description[locale],
         parameters: zodSchemaToJsonSchema(tool.schema),
       },
     }));
@@ -57,12 +61,10 @@ function zodSchemaToJsonSchema(schema: MockTool['schema']): Record<string, unkno
   const required: string[] = [];
 
   for (const [key, fieldSchema] of Object.entries(shape)) {
-    // Zod 타입에서 기본 JSON Schema 속성 추출
-    const zodType = fieldSchema as { _def?: { typeName?: string; description?: string }; isOptional?: () => boolean };
-    properties[key] = {
-      type: 'string',
-      description: zodType._def?.description ?? key,
-    };
+    const zodType = fieldSchema as { isOptional?: () => boolean };
+    // 파라미터 설명은 한국어로 고정되어 있어 LLM에는 전달하지 않는다 (언어 요인 혼입 방지).
+    // 파라미터 이름(query, adId 등)만으로 충분히 의미가 드러난다.
+    properties[key] = { type: 'string' };
     if (typeof zodType.isOptional !== 'function' || !zodType.isOptional()) {
       required.push(key);
     }

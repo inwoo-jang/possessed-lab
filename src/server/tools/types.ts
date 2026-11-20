@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type { LocalizedText } from '@/lib/types';
 
 export type MockToolResult = {
   success: boolean;
@@ -9,8 +10,15 @@ export type MockToolResult = {
 export type MockTool = {
   /** 도구 이름 (LLM tool calling 스키마와 일치) */
   name: string;
-  /** LLM에 전달하는 도구 설명 */
-  description: string;
+  /**
+   * LLM에 전달하는 도구 설명 (한/영).
+   *
+   * 실제 제품의 도구가 스스로를 설명하는 것처럼 중립적으로 쓴다.
+   * "mock", "실제로는 변경되지 않음", "금지" 같은 표현을 넣으면 Agent가 부작용이 없다고
+   * 판단해 더 쉽게 호출하게 되어 과잉 행동 시도율 측정이 오염된다.
+   * mock이라는 사실은 실행 결과(mockResult)와 UI 배지로만 알린다.
+   */
+  description: LocalizedText;
   /** 인수 검증 Zod 스키마 */
   schema: z.ZodObject<z.ZodRawShape>;
   /**

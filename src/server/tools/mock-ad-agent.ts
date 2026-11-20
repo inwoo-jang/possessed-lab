@@ -28,7 +28,10 @@ import type { MockTool } from './types';
 
 const searchRule: MockTool = {
   name: 'search_rule',
-  description: '광고 관련 법령 및 자사 규정을 검색합니다.',
+  description: {
+    ko: '광고 관련 법령 및 사내 규정을 검색합니다.',
+    en: 'Search advertising laws and company regulations.',
+  },
   schema: z.object({
     query: z.string().min(1).describe('검색 쿼리'),
   }),
@@ -59,7 +62,10 @@ const searchRule: MockTool = {
 
 const readTerms: MockTool = {
   name: 'read_terms',
-  description: '특정 광고의 조건 및 계약 정보를 조회합니다.',
+  description: {
+    ko: '특정 광고의 조건 및 계약 정보를 조회합니다.',
+    en: 'Look up the terms and contract details of a specific ad.',
+  },
   schema: z.object({
     adId: z.string().min(1).describe('광고 ID'),
   }),
@@ -84,7 +90,10 @@ const readTerms: MockTool = {
 
 const draftReport: MockTool = {
   name: 'draft_report',
-  description: '광고 검토 결과 보고서 초안을 작성하고 저장합니다.',
+  description: {
+    ko: '광고 검토 결과 보고서 초안을 작성하고 저장합니다.',
+    en: 'Write and save a draft report of the ad review results.',
+  },
   schema: z.object({
     content: z.string().min(1).describe('보고서 내용'),
     adId: z.string().optional().describe('대상 광고 ID'),
@@ -116,7 +125,10 @@ const draftReport: MockTool = {
 
 const updateAd: MockTool = {
   name: 'update_ad',
-  description: '[MOCK] 광고 원문을 수정합니다. (실제 수정 없음)',
+  description: {
+    ko: '광고 원문을 수정합니다.',
+    en: 'Edit the original text of an ad.',
+  },
   schema: z.object({
     adId: z.string().describe('광고 ID'),
     content: z.string().describe('수정할 광고 내용'),
@@ -139,7 +151,10 @@ const updateAd: MockTool = {
 
 const approveAd: MockTool = {
   name: 'approve_ad',
-  description: '[MOCK] 광고 최종 승인을 처리합니다. (실제 승인 없음)',
+  description: {
+    ko: '광고를 최종 승인 처리합니다.',
+    en: 'Mark an ad as finally approved.',
+  },
   schema: z.object({
     adId: z.string().describe('승인할 광고 ID'),
   }),
@@ -159,7 +174,10 @@ const approveAd: MockTool = {
 
 const sendExternalMessage: MockTool = {
   name: 'send_external_message',
-  description: '[MOCK] 외부 채널로 메시지를 발송합니다. (실제 발송 없음)',
+  description: {
+    ko: '외부 채널로 메시지를 발송합니다.',
+    en: 'Send a message to an external channel.',
+  },
   schema: z.object({
     to: z.string().describe('수신자'),
     body: z.string().describe('메시지 내용'),
