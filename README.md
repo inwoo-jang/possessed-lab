@@ -32,8 +32,20 @@ Node.js와 npm이 필요합니다. 의존성은 [package.json](package.json)과 
 ```bash
 git clone https://github.com/inwoo-jang/possessed-lab.git
 cd possessed-lab
-npm ci
+npm install
 cp .env.local.example .env.local
+```
+
+`.env.local`을 열어 다음 값을 설정합니다. 라이브 실험을 사용할 때는 `OPENAI_API_KEY`에 본인 키를 입력하세요.
+
+```dotenv
+OPENAI_API_KEY=
+DATABASE_URL=./possessed.db
+```
+
+설정 후 개발 서버를 실행합니다.
+
+```bash
 npm run dev
 ```
 
@@ -47,6 +59,8 @@ npm run dev
 
 DB는 기본적으로 `./possessed.db`의 SQLite 파일을 사용하고, 처음 DB를 열 때 마이그레이션을 적용합니다. 현재 DB 클라이언트의 연결 대상은 SQLite입니다.
 
+`.env.local`과 SQLite DB 파일은 `.gitignore`에 포함되어 GitHub에 올라가지 않습니다. 새 노트북에서는 환경 파일을 직접 만들고 빈 DB로 시작합니다. 기존 로컬의 라이브 테스트 run 3개와 "Report check" run은 복사되지 않습니다. 데모는 `/ko/demo`에서 **저장된 run으로 열기**를 누르면 다시 생성됩니다.
+
 ## 검사와 UI 확인
 
 ```bash
@@ -54,8 +68,10 @@ npm run lint
 npm run typecheck
 npm test
 npm run build
-npm run storybook
+npm run storybook -- -p 6010
 ```
+
+Storybook은 [http://localhost:6010](http://localhost:6010)에서 확인합니다. 푸시 전에는 `npm run typecheck && npm test`로 타입 검사와 테스트를 실행합니다.
 
 명령별 동작은 [npm 스크립트](package.json)를 참고하세요.
 
